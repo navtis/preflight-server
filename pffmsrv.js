@@ -1,18 +1,24 @@
 var prefix = "results/";
 var suffix = ".xml";
 var xmlMimeType = "text/xml";
+var port = 8181;
+var preflightjar = "preflight-app-2.0.0-SNAPSHOT.jar";
 
 var formidable = require('formidable'), http = require('http'), util = require('util');
 var fs = require('fs');
 
+fs.mkdir("./"+prefix, function(e) {});
+
 http.createServer(function(req, res) {
   if (req.url == '/upload' && req.method.toLowerCase() == 'post') {
+
     // parse a file upload
     var form = new formidable.IncomingForm();
 
     form.parse(req, function(err, fields, files) {
-      res.writeHead(200, {'content-type': 'text/html'});
+      console.log("Incoming! [" + files.upload.name + "]");
       validateFile(fields, files);
+      res.writeHead(200, {'content-type': 'text/html'});
       var linkback = "http://" + req.headers.host +"/" + prefix + files.upload.path.substr(5) + suffix;
       res.end('<a href="'+linkback+'">'+linkback+'</a>');
     });
@@ -24,6 +30,7 @@ http.createServer(function(req, res) {
     var pathname = req.url;
     pathname = pathname.substr(8);
     filename = "./"+prefix+pathname;
+    console.log("Result! [" + filename + "]");
     fs.exists(filename, function(exists) {
       if(!exists) {
         res.writeHead(200, {'Content-Type': 'text/plain'});
@@ -46,7 +53,12 @@ http.createServer(function(req, res) {
       '</form>'
     );
   }
-}).listen(8181);
+}).listen(port);
+
+console.log("");
+console.log("PDFBox Preflight Node.js Server Wrapper started on host:"+port);
+console.log("Good luck!");
+console.log("");
 
 function validateFile(fields, files) {
   var filename = files.upload.path;
@@ -56,7 +68,7 @@ function validateFile(fields, files) {
   var pfresult = "";
 
   var exec = require('child_process').exec, child;
-  child = exec('java -jar preflight-app.jar xml ' + filename, 
+  child = exec('java -jar ' + preflightjar + ' xml ' + filename, 
     function (error, stdout, stderr) {
       var result = stdout.toString();
       result = result.replace(toreplace, replacewith);  
