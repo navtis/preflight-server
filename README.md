@@ -53,7 +53,7 @@ preflight-app-2.0.0-SNAPSHOT.jar
 and you need to save that file to the repository root too.
 
 ## Rock and Roll
-Run this creature with:
+Tickle this creature with:
 
 ```
 node pffmsrv.js
@@ -68,5 +68,7 @@ to throttle the requests. There isn't any real queuing or ought like that going 
 
 ## ToDo
 Nicer handling of the `404` - for example "not done yet".
+
 Better error handling - an exception in node is kinda like turning off the record player at a party and scratching the record in the process.
+
 Re-implement the whole thing in a Java container.
