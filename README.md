@@ -67,8 +67,8 @@ at it is very very likely to do Bad Things. My m/c locked up at about 30 process
 to throttle the requests. There isn't any real queuing or ought like that going on.
 
 ## ToDo
-Nicer handling of the `404` - for example "not done yet".
+* Nicer handling of the `404` - for example "not done yet".
 
-Better error handling - an exception in node is kinda like turning off the record player at a party and scratching the record in the process.
+* Better error handling - an exception in node is kinda like turning off the record player at a party and scratching the record in the process.
 
-Re-implement the whole thing in a Java container.
+* Re-implement the whole thing in a Java container.
