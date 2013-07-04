@@ -4,21 +4,19 @@
         xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
   <xsl:output method="xml" indent="yes"/>
 
+  <xsl:param name="filename2"/> 
+
   <xsl:template match="preflight">
           <preflight>
-                  <xsl:apply-templates select="@* | node()"/>
+                  <xsl:apply-templates select="./*"/>
+                  <xsl:apply-templates select="document($filename2)/*"/> 
           </preflight>
 </xsl:template>
 
-<xsl:template match="fido_output">
-        <fido_output>
-                <xsl:apply-templates select="@* | node()"/>
-        </fido_output>
-</xsl:template>
 
-<xsl:template match="@* | node()"> 
+<xsl:template match="@*|node()"> 
     <xsl:copy> 
-        <xsl:apply-templates select="@* | node()"/> 
+        <xsl:apply-templates select="@*|node()"/> 
     </xsl:copy> 
 </xsl:template>
 

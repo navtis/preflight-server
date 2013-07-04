@@ -18,14 +18,15 @@ http.createServer(function(req, res) {
     form.parse(req, function(err, fields, files) {
       console.log("Incoming! [" + files.upload.name + "]");
       action = 'java -jar ' + preflightjar + ' xml ' + files.upload.path;
-      validateFile(fields, files, action);
+      validateFile(fields, files, action, 'j');
       action = 'fido/fido.py ' + files.upload.path + ' | fido/toxml.py';
-      validateFile(fields, files, action);
+      validateFile(fields, files, action, 'f');
       var filename = prefix+files.upload.path.substr(5) + suffix;
       var filename1 = prefix+files.upload.path.substr(5)+'j'+ suffix;
       var filename2 = prefix+files.upload.path.substr(5)+'f'+ suffix;
-      action = 'xsltproc merge.xsl "' + filename1 + '" "' + filename2 + '" > ' + filename;
-      validateFile(fields, files, action);
+      // need to wait for the two execs to finish here
+      action = 'xsltproc --stringparam filename2 "' + filename2 + '" merge.xsl ./'+ filename1;
+      validateFile(fields, files, action, '');
 
       res.writeHead(200, {'content-type': 'text/html'});
       fs.exists(filename, function(exists) {
@@ -69,14 +70,15 @@ console.log("PDFBox Preflight Node.js Server Wrapper started on host:"+port);
 console.log("Good luck!");
 console.log("");
 
-function validateFile(fields, files, action) {
+function validateFile(fields, files, action, postfix) {
   var filename = files.upload.path;
-  var toreplace = filename.substr(5) + action.substr(0,1);
+  var toreplace = filename.substr(5) + postfix;
   var replacewith = files.upload.name;
   var outfilename = "./" + prefix + toreplace + suffix;
   var pfresult = "";
 
   var exec = require('child_process').exec, child;
+  console.log(action);
   child = exec(action, 
     function (error, stdout, stderr) {
       var result = stdout.toString();
@@ -86,7 +88,7 @@ function validateFile(fields, files, action) {
           console.log(err);
         } else {
           // file saved. could log.
-          //console.log("The file was saved!");
+          console.log("The file was saved! " + outfilename);
         }
       }); 
       // No need to do ought with stderr
