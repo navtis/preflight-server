@@ -21,10 +21,15 @@ http.createServer(function(req, res) {
       validateFile(fields, files, action);
       action = 'fido/fido.py ' + files.upload.path + ' | fido/toxml.py';
       validateFile(fields, files, action);
+      var filename = prefix+files.upload.path.substr(5) + suffix;
+      var filename1 = prefix+files.upload.path.substr(5)+'j'+ suffix;
+      var filename2 = prefix+files.upload.path.substr(5)+'f'+ suffix;
+      action = 'xsltproc merge.xsl "' + filename1 + '" "' + filename2 + '" > ' + filename;
+      validateFile(fields, files, action);
+
       res.writeHead(200, {'content-type': 'text/html'});
-      var filename = prefix+files.upload.path.substr(5)+'j'+ '.' + suffix;
       fs.exists(filename, function(exists) {
-        var linkback = "http://" + req.headers.host +"/" + prefix + files.upload.path.substr(5) + 'j' + suffix;
+        var linkback = "http://" + req.headers.host +"/" + prefix + files.upload.path.substr(5) + suffix;
         res.end('<a href="'+linkback+'">'+linkback+'</a>');
       });
     });
@@ -45,17 +50,7 @@ http.createServer(function(req, res) {
         return;
    }
    res.writeHead(200, xmlMimeType);
-   //res.write('<nodeserver>');
    fileStream.pipe(res);
-   filename2 = filename.substr(0, filename.length - 5) + 'f' + suffix;
-   console.log(filename2);
-   try {
-        var fileStream2 = fs.createReadStream(filename2);
-   } catch (e) {
-        return;
-   }
-   fileStream2.pipe(res);
-    //res.write('</nodeserver>');
   } else {
     // show a file upload form
     res.writeHead(200, {'content-type': 'text/html'});
